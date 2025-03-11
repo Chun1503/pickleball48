@@ -5,9 +5,12 @@
  */
 package controller;
 
+import dao.OrderDAO;
 import dao.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,14 +19,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import model.CartItem;
-import model.Products;
+import model.Order_Details;
 
 /**
  *
- * @author Minh Trung
+ * @author hoang
  */
-@WebServlet(name = "logoutServlet", urlPatterns = {"/logout"})
-public class LogoutServlet extends HttpServlet {
+@WebServlet(name = "VNPayReturnServlet", urlPatterns = {"/vnpayreturn"})
+public class VNPayReturnServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -42,10 +45,10 @@ public class LogoutServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet Logout</title>");
+            out.println("<title>Servlet VNPayReturnServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet Logout at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet VNPayReturnServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -63,10 +66,42 @@ public class LogoutServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        ProductDAO pDao = new ProductDAO();
+        OrderDAO oDao = new OrderDAO();
         HttpSession session = request.getSession();
-        session.invalidate();
+        String orderId = (String) session.getAttribute("orderId");
+        String transactionStatus = request.getParameter("vnp_TransactionStatus");
 
-        response.sendRedirect("index.jsp");
+        if (transactionStatus.equalsIgnoreCase("00")) {
+            Map<Integer, CartItem> cart = (Map<Integer, CartItem>) session.getAttribute("cart");
+            List<CartItem> ciList = new ArrayList<>();
+
+            for (CartItem item : cart.values()) {
+                pDao.updateQuantity(item.getId(), item.getStock_quantity() - item.getQuantity());
+                ciList.add(item);
+            }
+
+            oDao.updateOrderStatus(Integer.parseInt(orderId), "completed");
+            oDao.updatePaymentStatus(Integer.parseInt(orderId), "completed");
+
+            session.removeAttribute("cart");
+            session.removeAttribute("cartSize");
+
+            request.setAttribute("message", "Cảm ơn bạn đã đặt hàng. Chúng tôi sẽ sớm xác nhận đơn hàng của bạn.");
+            request.setAttribute("orderstatus", "Chúc mừng, bạn đã đặt hàng thành công!");
+            request.setAttribute("ciList", ciList);
+            request.getRequestDispatcher("successpay.jsp").forward(request, response);
+        } else {
+
+            oDao.updateOrderStatus(Integer.parseInt(orderId), "cancelled");
+            oDao.updatePaymentStatus(Integer.parseInt(orderId), "cancelled");
+
+            session.removeAttribute("cart");
+            session.removeAttribute("cartSize");
+            request.setAttribute("message", "Ui bạn huỷ đơn hàng mất rồi, nếu có sai sót gì mong bạn feedback lại cho tụi mình nhé!");
+            request.setAttribute("orderstatus", "Bạn đã huỷ đơn hàng!");
+            request.getRequestDispatcher("successpay.jsp").forward(request, response);
+        }
     }
 
     /**
