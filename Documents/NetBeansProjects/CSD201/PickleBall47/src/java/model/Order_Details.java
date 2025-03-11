@@ -16,6 +16,9 @@ public class Order_Details {
     private int quantity;
     private double price;
 
+    public Order_Details() {
+    }
+    
    public Order_Details(int order_detail_id, int order_id, int product_id, int quantity, double price) {
         this.order_detail_id = order_detail_id;
         this.order_id = order_id;
