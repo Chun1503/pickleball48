@@ -82,16 +82,10 @@
                     <div class="navbar-nav ms-auto py-0">
                         <a href="index.jsp" class="nav-item nav-link active">Trang Chủ</a>
                         <a href="danhsachtimsan" class="nav-item nav-link">Tìm Sân</a>
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Product</a>
-                            <div class="dropdown-menu m-0">
-                                <a href="Clothes" class="dropdown-item">clothing</a>
-                                <a href="accessory" class="dropdown-item">accessory</a>
-                            </div>
-                        </div>
+                        <a href="productlist" class="nav-item nav-link">Sản phẩm</a>
                         <a href="contact.html" class="nav-item nav-link">Liên Hệ</a>
                     </div >
-                    <a href="lichsuhoadon" class="icon-button">
+                    <a href="orderhistory" class="icon-button">
                         <span class="material-icons">history</span>
                     </a>
 
