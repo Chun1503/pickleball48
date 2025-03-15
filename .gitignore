@@ -1,0 +1,6 @@
+/Documents/NetBeansProjects/CSD201/PickleBall47/nbproject/private/
+# Bỏ qua thư mục Documents (nếu có trong dự án)
+Documents/
+
+# Bỏ qua file PickleBall48.sql
+PickleBall48.sql
