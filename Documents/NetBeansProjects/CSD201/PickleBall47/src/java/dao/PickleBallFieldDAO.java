@@ -131,13 +131,7 @@ public class PickleBallFieldDAO extends DBContext {
             System.out.println("Sân tìm được: " + pbf.getName());
         }
 
-        // Thêm sân mới
-        PickleBallField newPbf = new PickleBallField();
-        newPbf.setName("Sân PickleBall mới");
-        newPbf.setTypeofPickleBallField(1);
-        newPbf.setPrice(200000);
-        newPbf.setImage("image_url.jpg");
-        pbfDao.insertPickleBallField(newPbf);
+    
 
         // Cập nhật thông tin sân
         PickleBallField updatePbf = new PickleBallField();

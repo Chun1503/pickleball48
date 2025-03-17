@@ -5,9 +5,11 @@
  */
 package controller;
 
+import dao.RegisteredPickleBallFieldDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,14 +17,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import model.PickleBallFieldSchedule;
+import model.Account;
+import model.RegisteredPickleBallField;
 
 /**
  *
  * @author Minh Trung
  */
-@WebServlet(name = "PaginationServlet", urlPatterns = {"/pagination"})
-public class PaginationServlet extends HttpServlet {
+@WebServlet(name = "SandadatServlet", urlPatterns = {"/sandadat"})
+public class SandadatServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -36,15 +39,15 @@ public class PaginationServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
+        try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet PaginationServlet</title>");
+            out.println("<title>Servlet SandadatServlet</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet PaginationServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet SandadatServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -59,36 +62,30 @@ public class PaginationServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override
+  @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession();
-        List<List<PickleBallFieldSchedule>> dataList = (List<List<PickleBallFieldSchedule>>) session.getAttribute("listffs");
-        if (dataList == null) {
-    dataList = new ArrayList<>(); // Khởi tạo danh sách rỗng nếu giá trị là null
-}
+        Account user = (Account) session.getAttribute("account");
+        if (user == null) {
+            response.sendRedirect("login");
+        } else
+        {
 
-        // Pagination logic
-        int page = 1;
-        int recordsPerPage = 7;
-        if (request.getParameter("page") != null) {
-            page = Integer.parseInt(request.getParameter("page"));
+            RegisteredPickleBallFieldDAO rFFD = new RegisteredPickleBallFieldDAO();
+            List<RegisteredPickleBallField> listRFF = new ArrayList<>();
+            listRFF = rFFD.getRegisteredPickleBallFieldByIDAccount1(user.getIDAccount());
+            List<RegisteredPickleBallField> listRFFwithRFO = new ArrayList<>();
+            for (RegisteredPickleBallField registeredPickleBallField : listRFFwithRFO) {
+                listRFF.add(registeredPickleBallField);
+            }
+            Collections.reverse(listRFF);
+            session.setAttribute("listRFF", listRFF);
+            request.getRequestDispatcher("sandadat.jsp").forward(request, response);
         }
-        int startIndex = (page - 1) * recordsPerPage;
-        int endIndex = Math.min(startIndex + recordsPerPage, dataList.size());
-
-        List<List<PickleBallFieldSchedule>> currentPageData = new ArrayList<>();
-        if (startIndex <= endIndex) {
-            currentPageData = dataList.subList(startIndex, endIndex);
-        }
-        request.setAttribute("currentPageData", currentPageData);
-        request.setAttribute("totalRecords", dataList.size());
-        request.setAttribute("recordsPerPage", recordsPerPage);
-        request.setAttribute("currentPage", page);
-        request.getRequestDispatcher("timsan.jsp").forward(request, response);
-
     }
-
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -107,3 +104,5 @@ public class PaginationServlet extends HttpServlet {
     }// </editor-fold>
 
 }
+
+

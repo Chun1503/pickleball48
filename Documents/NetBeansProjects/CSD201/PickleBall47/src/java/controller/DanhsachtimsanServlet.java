@@ -6,10 +6,12 @@
 package controller;
 
 import com.google.gson.Gson;
+import dao.PickleBallFieldDAO;
 import dao.PickleBallFieldScheduleDAO;
 import dao.RegisteredPickleBallFieldDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
+
 import java.sql.Time;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -27,6 +29,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import model.PickleBallField;
 import model.PickleBallFieldSchedule;
 import model.RegisteredPickleBallField;
 
@@ -156,9 +159,13 @@ public class DanhsachtimsanServlet extends HttpServlet {
                 // Chuy?n d?i LocalTime sang java.sql.Time (n?u c?n)
                 Time sqlTime = Time.valueOf(currentTime);
                 listSchedule = ffsd.getPickleBallFieldScheduleByStartTimeAndStatus0AndStatusFF0(sqlTime);
+                if (listSchedule == null) {
+    listSchedule = new ArrayList<>();
+}
                 if (listSchedule.size() != 0) {
                     list.add(listSchedule);
                 }
+                Logger.getLogger(DanhsachtimsanServlet.class.getName()).log(Level.INFO, "No schedule found for status = 0");
             }
         } else {
             for (LocalTime currentTime = startTime; !currentTime.equals(endTime); currentTime = currentTime.plusHours(1)) {
@@ -172,6 +179,8 @@ public class DanhsachtimsanServlet extends HttpServlet {
         }
 
         if (!list.isEmpty()) {
+             Logger.getLogger(DanhsachtimsanServlet.class.getName()).log(Level.INFO, "No schedule found for the given criteria");
+        request.setAttribute("message", "No schedule available.");
 
             int maxSize = 0;
 

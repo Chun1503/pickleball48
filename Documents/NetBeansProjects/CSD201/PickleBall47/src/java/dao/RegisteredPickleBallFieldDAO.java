@@ -148,7 +148,7 @@ public class RegisteredPickleBallFieldDAO extends DBContext {
     }
 
     // Thêm đăng ký sân PickleBall mới
-    public void insertRegisteredPickleBallField(RegisteredPickleBallField rpbf) {
+    public void insertRFF(RegisteredPickleBallField rff) {
         String sql = "INSERT INTO [dbo].[RegisteredPickleBallField]\n"
                 + "           ([IDAccount1]\n"
                 + "           ,[IDPickleBallFieldSchedule]\n"
@@ -161,14 +161,14 @@ public class RegisteredPickleBallFieldDAO extends DBContext {
                 + "     VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try {
             PreparedStatement st = getConnection().prepareStatement(sql);
-            st.setInt(1, rpbf.getAccount1().getIDAccount());
-            st.setInt(2, rpbf.getPickleBallFieldSchedule().getIDPickleBallFieldSchedule());
-            st.setDate(3, (Date) rpbf.getDate());
-            st.setString(4, rpbf.getName());
-            st.setString(5, rpbf.getPhoneNumber());
-            st.setDouble(6, rpbf.getDeposit());
-            st.setInt(7, rpbf.getStatus());
-            st.setString(8, rpbf.getNote());
+            st.setInt(1, rff.getAccount1().getIDAccount());
+            st.setInt(2, rff.getPickleBallFieldSchedule().getIDPickleBallFieldSchedule());
+            st.setDate(3, (Date) rff.getDate());
+            st.setString(4, rff.getName());
+            st.setString(5, rff.getPhoneNumber());
+            st.setDouble(6, rff.getDeposit());
+            st.setInt(7, rff.getStatus());
+            st.setString(8, rff.getNote());
             st.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e);

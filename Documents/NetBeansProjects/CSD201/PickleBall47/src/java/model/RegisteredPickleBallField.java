@@ -36,6 +36,10 @@ public class RegisteredPickleBallField {
         this.Note = Note;
     }
 
+    public RegisteredPickleBallField() {
+       
+    }
+
     public int getIDRegisteredPickleBallField() {
         return IDRegisteredPickleBallField;
     }

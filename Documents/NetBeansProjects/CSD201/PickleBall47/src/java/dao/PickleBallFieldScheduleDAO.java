@@ -296,14 +296,14 @@ public class PickleBallFieldScheduleDAO extends DBContext {
     Time sqlTime = Time.valueOf("09:30:00");
 
     // Lấy danh sách lịch trình sân PickleBall theo thời gian bắt đầu
-     list = pbfsDao.getPickleBallFieldScheduleByStartTimeAndStatus0AndStatusFF0AndTypeFF(sqlTime, 1);
+     list = pbfsDao.getPickleBallFieldScheduleByStartTimeAndStatus0AndStatusFF0(sqlTime);
     for (PickleBallFieldSchedule pbfs : list) {
         System.out.println("ID: " + pbfs.getIDPickleBallFieldSchedule());
         System.out.println("StartTime: " + pbfs.getStartTime());
         System.out.println("Endtime: " + pbfs.getEndtime());
         System.out.println("Status: " + pbfs.getStatus());
         System.out.println("-----------------------------");
-        
-    }
+
+}
 }
 }

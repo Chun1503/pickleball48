@@ -64,28 +64,35 @@
                     changeYear: true
                 });
             });
-            $(document).on("click", ".card", function () {
-                var iD = $(this).attr("id");
-                // Hiển thị modal
-                $.ajax({
-                    method: "GET",
-                    url: "http://localhost:8080/PickleBall47/thongtinsanPickleBall",
-                    dataType: "JSON",
-                    data: {id: iD}
-                })
-                        .done(function (msg) {
-                            $("#tensan1").text(msg.PickleBallField.Name);
-                            $("#loaisan1").text("Sân dành cho " + msg.PickleBallField.TypeofPickleBallField + "người/Đội");
-                            $("#start1").text(msg.StartTime);
-                            $("#end1").text(msg.EndTime);
-                            $("#price1").text(msg.PickleBallField.Price + "VNĐ");
-                            var imageUrl = "img_nhat/" + msg.PickleBallField.Image;
-                            $(".imgne").css("background-image", "url('" + imageUrl + "')");
-                            $("#myModal").modal("show");
+          $(document).on("click", ".card", function () {
+    var iD = $(this).attr("id");
+    $.ajax({
+        method: "GET",
+        url: "http://localhost:8080/PickleBall47/thongtinsanPickleBall",
+        dataType: "JSON",
+        data: {id: iD}
+    })
+    .done(function (msg) {
+        console.log(msg); // Kiểm tra dữ liệu trả về trong console
+        if (msg && msg.PickleBallField) { // Sửa thành msg.PickleBallField
+            $("#tensan1").text(msg.PickleBallField.Name); // Sửa thành msg.PickleBallField.Name
+            $("#loaisan1").text("Sân dành cho " + msg.PickleBallField.TypeofPickleBallField + "người/Đội"); // Sửa thành msg.PickleBallField.TypeofPickleBallField
+            $("#start1").text(msg.StartTime); // Sửa thành msg.StartTime
+            $("#end1").text(msg.Endtime); // Sửa thành msg.Endtime
+            $("#price1").text(msg.PickleBallField.Price + "VNĐ"); // Sửa thành msg.PickleBallField.Price
+            var imageUrl = "img_nhat/" + msg.PickleBallField.Image; // Sửa thành msg.PickleBallField.Image (nếu có)
+            $(".imgne").css("background-image", "url('" + imageUrl + "')");
+            $("#myModal").modal("show");
+        } else {
+            console.error("Dữ liệu trả về không hợp lệ: ", msg);
+        }
+    })
+    .fail(function (jqXHR, textStatus, errorThrown) {
+        console.error("AJAX request failed: ", textStatus, errorThrown); // Log lỗi nếu có
+    });
+});
 
-                        });
-
-            });
+            
         </script>
 
 
@@ -204,7 +211,8 @@
 
                     <c:forEach var="PickleBallschedule" items="${requestScope.currentPageData}">
                         <fmt:formatDate value="${PickleBallschedule[0].startTime}" pattern="HH:mm" var="formattedStartTime" />
-                        <fmt:formatDate value="${PickleBallschedule[0].endTime}" pattern="HH:mm" var="formattedEndTime" />
+                          <fmt:formatDate value="${PickleBallschedule[0].endtime}" pattern="HH:mm" var="formattedEndTime" />
+
                         <div class="row d-flex flex-row mt-2 mb-2">      
                             <div class="col-md-2 time-show">
                                 <h3 class="text-dark">${formattedStartTime}-${formattedEndTime}</h3> 
@@ -215,10 +223,11 @@
                                     <div class="col-md-${sessionScope.size}" >
                                         <div class="card" id="${PickleBall.IDPickleBallFieldSchedule}" >
                                             <div class="card-body text-center"style="padding: 5px">
-                                                <h5 class="card-title ">${PickleBall.PickleBallField.name}</h5>
-
-                                                <p class="card-text m-0 ">Loại sân: Sân ${PickleBall.PickleBallField.typeofPickleBallField} </p>
-                                                <p class="card-text m-0 ">Giá cả: ${PickleBall.PickleBallField.price} VND/giờ</p>
+                                                <c:if test="${not empty PickleBall.pickleBallField}">
+                                                    <h5 class="card-title ">${PickleBall.pickleBallField.name}</h5>
+                                                    <p class="card-text m-0 ">Loại sân: Sân ${PickleBall.pickleBallField.typeofPickleBallField}</p>
+                                                    <p class="card-text m-0 ">Giá cả: ${PickleBall.pickleBallField.price} VND/giờ</p>
+                                                </c:if>
                                                 <button type="button" disabled="" class="btn btn-danger p-1 d-block w-75 m-auto" onclick="event.stopPropagation()">Sân bận</button>
                                             </div>
                                         </div>
@@ -228,9 +237,11 @@
                                     <div class="col-md-${sessionScope.size}" >
                                         <div class="card" id="${PickleBall.IDPickleBallFieldSchedule}">
                                             <div class="card-body text-center"style="padding: 5px">
-                                                <h5 class="card-title ">${PickleBall.PickleBallField.name}</h5>
-                                                <p class="card-text m-0 ">Loại sân: Sân ${PickleBall.PickleBallField.typeofPickleBallField} người</p>
-                                                <p class="card-text m-0 ">Giá cả: ${PickleBall.PickleBalllField.price} VND/giờ</p>
+                                                <c:if test="${not empty PickleBall.pickleBallField}">
+                                                    <h5 class="card-title ">${PickleBall.pickleBallField.name}</h5>
+                                                    <p class="card-text m-0 ">Loại sân: Sân ${PickleBall.pickleBallField.typeofPickleBallField}</p>
+                                                    <p class="card-text m-0 ">Giá cả: ${PickleBall.pickleBallField.price} VND/giờ</p>
+                                                </c:if>
                                                 <a href="checkdatsan?ffsID=${PickleBall.IDPickleBallFieldSchedule}&ngay=${currentDate}" class="btn btn-success p-1 d-block w-75 m-auto" onclick="event.stopPropagation()">Đặt sân</a>
                                             </div>
                                         </div>

@@ -5,10 +5,9 @@
  */
 package controller;
 
+import dao.PickleBallFieldScheduleDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -21,8 +20,8 @@ import model.PickleBallFieldSchedule;
  *
  * @author Minh Trung
  */
-@WebServlet(name = "PaginationServlet", urlPatterns = {"/pagination"})
-public class PaginationServlet extends HttpServlet {
+@WebServlet(name = "CheckDatsanServlet", urlPatterns = {"/checkdatsan"})
+public class CheckDatsanServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -36,15 +35,15 @@ public class PaginationServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
+        try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet PaginationServlet</title>");
+            out.println("<title>Servlet CheckDatsanServlet</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet PaginationServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet CheckDatsanServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -60,36 +59,34 @@ public class PaginationServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+   protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession();
-        List<List<PickleBallFieldSchedule>> dataList = (List<List<PickleBallFieldSchedule>>) session.getAttribute("listffs");
-        if (dataList == null) {
-    dataList = new ArrayList<>(); // Khởi tạo danh sách rỗng nếu giá trị là null
-}
-
-        // Pagination logic
-        int page = 1;
-        int recordsPerPage = 7;
-        if (request.getParameter("page") != null) {
-            page = Integer.parseInt(request.getParameter("page"));
+        String ffsID_raw = request.getParameter("ffsID");
+        String ngay = request.getParameter("ngay");
+        if (session.getAttribute("account") == null) {
+            response.sendRedirect("sign-in.jsp");
+        } else {
+            int ffsID = Integer.parseInt(ffsID_raw);
+            PickleBallFieldScheduleDAO ffsd = new PickleBallFieldScheduleDAO();
+            PickleBallFieldSchedule ffs = ffsd.getPickleBallFieldScheduleByID(ffsID);
+            request.setAttribute("ffs", ffs);
+            session.setAttribute("ffsID", ffsID);
+            session.setAttribute("ngay", ngay);
+            request.getRequestDispatcher("datsan.jsp").forward(request, response);
         }
-        int startIndex = (page - 1) * recordsPerPage;
-        int endIndex = Math.min(startIndex + recordsPerPage, dataList.size());
-
-        List<List<PickleBallFieldSchedule>> currentPageData = new ArrayList<>();
-        if (startIndex <= endIndex) {
-            currentPageData = dataList.subList(startIndex, endIndex);
-        }
-        request.setAttribute("currentPageData", currentPageData);
-        request.setAttribute("totalRecords", dataList.size());
-        request.setAttribute("recordsPerPage", recordsPerPage);
-        request.setAttribute("currentPage", page);
-        request.getRequestDispatcher("timsan.jsp").forward(request, response);
-
     }
 
-
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
