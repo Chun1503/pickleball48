@@ -13,7 +13,7 @@ public class DBContext {
             // Đăng ký driver SQL Server
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             // Chuỗi kết nối đến cơ sở dữ liệu PickleBall48
-            String url = "jdbc:sqlserver://localhost:1433;databaseName=PickleBall48;user=sa;password=123";
+            String url = "jdbc:sqlserver://localhost:1433;databaseName=PickleBall48;user=sa;password=sa123";
             con = DriverManager.getConnection(url);
             return con;
         } catch (ClassNotFoundException ex) {
